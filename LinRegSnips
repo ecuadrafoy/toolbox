@@ -1,1 +1,53 @@
-#Test
+#How to solve outliers
+import scipy
+import sys
+for i in [write the columns that you wish to find outlines for. 'column1', ''column2'...'column n']:
+    outlayer_duoi = data[i] > (np.percentile(data[i], 75) + 1.5* scipy.stats.iqr(data[i]))
+    outlayer_tren = data[i] < (np.percentile(data[i], 25) - 1.5* scipy.stats.iqr(data[i]))
+    outlayer_all = outlayer_duoi | outlayer_tren
+    data[i].loc[outlayer_all] = data[i].mean()
+    
+#Solving for missing
+df.isna().sum(0) #detects missing values
+
+for i in [write the columns that you wish to solve missing. 'column1', ''column2'...'column n']:
+  data[i].loc[data[i].isna()] = data[i].mean()
+#turning categorical variables into a series of zeroes and ones, makes them quantifiable
+
+pd.get_dummies(data = df, prefix['column1','column2','column3'])
+
+#scaling data
+y = df['column with the y axis'].values
+x = df.drop(columns = ['column with the y axis'])
+
+from sklearn.preprocessing import MinMaxScaler
+x= MinMaxScaler().fit(x).transform(x)
+
+#building linear model on sklearn
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split( x, y, test_size=0.2, random_state=4) 
+#test_size=0.2 takes 20% of the total set as training set, random_state adds a seed used by the random number generator
+
+# Building linear model
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()  
+regressor.fit(x_train, y_train)
+
+#predict test set
+
+y_pred = regression.predict(x_test)
+
+r = scipy.stats.pearsonr(y_test, y_pred) #pearson correlation coefficient and p-value for testing non-correlation. Both have to be arrays
+pearson_r = str(round(r[0],2)) #provides pearson correlation coefficient
+pearson_p = str(r[1]) #provides two-tailed p-value
+
+plt.figure(figsize= (10,4))
+ax1 = plt.subplot(121)
+sb.scatterplot(y_test, y_pred)
+plt.text(5000, 35000, 'pearson R: '+ pearson_r + '\np: ' + pearson_p, va = 'top')
+
+ax2 = plt.subplot(122)
+sb.kdeplot(y_test, shade=True, color="r", legend=True, label = 'Test')
+sb.kdeplot(y_pred, shade=True, color="b", legend=True, label = 'Predict')
+plt.legend()
